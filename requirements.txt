@@ -9,3 +9,5 @@ streamlit>=1.28.0
 plotly>=5.18.0
 joblib>=1.3.0
 notebook
+# docs-only: needed by scripts/md_to_docx.py, not by the app or models
+python-docx>=1.0.0

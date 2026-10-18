@@ -220,6 +220,51 @@ try:
                     break
         if ok:
             check(f"app page renders: {page}", True)
+
+    # ---- Regression: the SHAP radio used to wipe the results ----------------
+    # Bug reported by user: clicking the "Explain the prediction for:" radio
+    # re-ran the script, `submitted` went back to False, and every gauge and
+    # chart vanished. Results must persist across widget interactions.
+    at = AppTest.from_file(str(ROOT / "app" / "app.py"), default_timeout=180)
+    at.run()
+    at.radio[0].set_value("🫀 Sleep-Disorder & Heart Risk (NHANES)")
+    at.run()
+
+    submit = [b for b in at.button if "estimate" in b.label.lower()]
+    if submit:
+        submit[0].click()
+        at.run()
+        plots_before = len(at.get("plotly_chart"))
+        check("interaction: results render after submit", plots_before >= 3,
+              f"{plots_before} charts")
+
+        # The SHAP radio is the second radio on this page (nav radio is first)
+        shap_radios = [r for r in at.radio if "Explain" in r.label]
+        if shap_radios:
+            shap_radios[0].set_value("Insomnia")
+            at.run()
+            if at.exception:
+                check("interaction: SHAP radio switch keeps results", False,
+                      str(at.exception))
+            else:
+                plots_after = len(at.get("plotly_chart"))
+                check("interaction: SHAP radio switch keeps results",
+                      plots_after >= 3,
+                      f"charts went {plots_before} -> {plots_after} after switching radio")
+
+            shap_radios[0].set_value("Sleep apnea")
+            at.run()
+            if at.exception:
+                check("interaction: second radio switch keeps results", False,
+                      str(at.exception))
+            else:
+                check("interaction: second radio switch keeps results",
+                      len(at.get("plotly_chart")) >= 3,
+                      f"{len(at.get('plotly_chart'))} charts")
+        else:
+            check("interaction: SHAP radio present after submit", False, "radio not found")
+    else:
+        check("interaction: submit button found on NHANES page", False, "no button")
 except ImportError:
     print("[SKIP] streamlit.testing not available")
 

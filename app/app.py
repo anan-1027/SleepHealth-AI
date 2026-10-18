@@ -326,13 +326,21 @@ elif page == "🫀 Sleep-Disorder & Heart Risk (NHANES)":
             "daytime_sleepiness": sleepy_map[sleepy],
             "trouble_sleeping": int(trouble == "Yes"),
         }
+        # Remember the profile. Without this, any widget click outside the form
+        # (e.g. the SHAP radio below) re-runs the script, `submitted` becomes
+        # False again and every result disappears.
+        st.session_state["nhanes_inputs"] = inputs
+
+    inputs = st.session_state.get("nhanes_inputs")
+
+    if inputs:
         df_in = pd.DataFrame([inputs])
+        names = {"heart_disease": "Heart disease", "insomnia_risk": "Insomnia",
+                 "osa_risk": "Sleep apnea"}
 
         st.markdown("#### 📊 Estimated screening risks")
         probs = {}
         cols = st.columns(3)
-        names = {"heart_disease": "Heart disease", "insomnia_risk": "Insomnia",
-                 "osa_risk": "Sleep apnea"}
         for i, key in enumerate(required):
             meta = TASK_META.get(key, {})
             raw = float(MODELS[key].predict_proba(df_in[meta.get("features_model_b",

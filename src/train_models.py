@@ -39,6 +39,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 
+from feature_labels import display_feature
+
 warnings.filterwarnings("ignore")
 
 DATA = os.path.join("data", "processed", "nhanes_sleep_health.csv")
@@ -243,8 +245,11 @@ def main() -> None:
                 vals = vals[1]
             elif getattr(vals, "ndim", 0) == 3:
                 vals = vals[:, :, 1]
+            # population-level figure: no single person's value applies, so labels
+            # are shown without the bracketed value used on the per-patient bars
+            readable = [display_feature(f) for f in task["model_b"]]
             shap.summary_plot(np.asarray(vals), Xs[:300],
-                              feature_names=task["model_b"], show=False,
+                              feature_names=readable, show=False,
                               max_display=12)
             plt.title(f"SHAP (log-odds) - {task['label']}", fontsize=9)
             plt.tight_layout()

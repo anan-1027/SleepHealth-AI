@@ -4,6 +4,7 @@
 # can be launched from any working directory:
 #     streamlit run app/app.py
 import json
+import sys
 import warnings
 from pathlib import Path
 
@@ -22,6 +23,10 @@ METRICS_DIR = ROOT / "results" / "metrics"
 FIGURES_DIR = ROOT / "results" / "figures"
 PROCESSED = ROOT / "data" / "processed"
 RAW = ROOT / "data" / "raw"
+
+# shared human-readable feature naming (used by the app AND the training figures)
+sys.path.insert(0, str(ROOT / "src"))
+from feature_labels import display_feature, display_features  # noqa: E402
 
 st.set_page_config(page_title="SleepHealth-AI", page_icon="🌙", layout="wide")
 
@@ -375,12 +380,16 @@ elif page == "🫀 Sleep-Disorder & Heart Risk (NHANES)":
         background = pd.read_csv(PROCESSED / "nhanes_sleep_health.csv")[feats]
         try:
             vals, fnames = shap_contributions(MODELS[key], row, background)
-            st.plotly_chart(shap_bar(vals, fnames,
+            # Raw column names (gender_female, snore_freq, ...) are code identifiers,
+            # not readable labels. Show what the user actually chose, e.g. "Sex: Male".
+            labels = display_features(fnames, row)
+            st.plotly_chart(shap_bar(vals, labels,
                                      f"{which} — contribution of each feature"),
                             width="stretch")
             st.caption("Red pushes the estimate **up**, green pushes it **down**. "
                        "SHAP values are on the log-odds scale (a value of +0.69 roughly "
-                       "doubles the estimated odds).")
+                       "doubles the estimated odds). The bracketed values are the inputs "
+                       "**you selected** above.")
         except Exception as exc:
             st.info(f"SHAP unavailable: {exc}")
 
@@ -659,10 +668,11 @@ elif page == "🫀 Cardiometabolic Dashboard":
         try:
             vals, fnames = shap_contributions(MODELS["hypertension"], df_in[feats],
                                               df_in[feats])
-            st.plotly_chart(shap_bar(vals, fnames,
+            st.plotly_chart(shap_bar(vals, display_features(fnames, df_in),
                                      "Feature contribution (hypertension)"),
                             width="stretch")
-            st.caption("Red raises the estimate, green lowers it (log-odds scale).")
+            st.caption("Red raises the estimate, green lowers it (log-odds scale). "
+                       "Bracketed values are the inputs you selected.")
         except Exception as exc:
             st.info(f"SHAP unavailable: {exc}")
 

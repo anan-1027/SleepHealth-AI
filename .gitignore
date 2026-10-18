@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Word lock/temp files (created while a .docx is open)
+~$*
+*.tmp

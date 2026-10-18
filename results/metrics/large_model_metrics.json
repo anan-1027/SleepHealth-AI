@@ -1,0 +1,78 @@
+{
+  "model": "large_sleep_risk_model",
+  "dataset": "data/raw/large_sleep_data.csv",
+  "dataset_note": "SYNTHETIC / generated benchmark dataset (Sleep Health & Daily Performance Dataset, 100,000 records, 32 columns, year 2026).",
+  "n_records": 100000,
+  "n_features": 28,
+  "target": "sleep_disorder_risk (ordinal: Healthy < Mild < Moderate < Severe)",
+  "excluded_columns": [
+    "person_id",
+    "sleep_disorder_risk",
+    "cognitive_performance_score",
+    "felt_rested"
+  ],
+  "design": "RepeatedStratifiedKFold 5 folds x 2 repeats + 20% stratified hold-out",
+  "cv_accuracy": {
+    "mean": 0.9508,
+    "std": 0.0012,
+    "ci95": [
+      0.9489,
+      0.9527
+    ]
+  },
+  "cv_balanced_accuracy": {
+    "mean": 0.8526,
+    "std": 0.0038,
+    "ci95": [
+      0.8457,
+      0.8577
+    ]
+  },
+  "cv_macro_f1": {
+    "mean": 0.8675,
+    "std": 0.0038,
+    "ci95": [
+      0.861,
+      0.8727
+    ]
+  },
+  "holdout_report": {
+    "Healthy": {
+      "precision": 0.9952082565425728,
+      "recall": 0.9971378450743237,
+      "f1-score": 0.9961721164045566,
+      "support": 10831.0
+    },
+    "Mild": {
+      "precision": 0.9333623062436621,
+      "recall": 0.9622162485065711,
+      "f1-score": 0.947569674240753,
+      "support": 6696.0
+    },
+    "Moderate": {
+      "precision": 0.7385919165580183,
+      "recall": 0.6825301204819277,
+      "f1-score": 0.7094552285535379,
+      "support": 1660.0
+    },
+    "Severe": {
+      "precision": 0.8621659634317862,
+      "recall": 0.7539975399753998,
+      "f1-score": 0.8044619422572179,
+      "support": 813.0
+    },
+    "accuracy": 0.94945,
+    "macro avg": {
+      "precision": 0.8823321106940099,
+      "recall": 0.8489704385095556,
+      "f1-score": 0.8644147403640163,
+      "support": 20000.0
+    },
+    "weighted avg": {
+      "precision": 0.9477949069488258,
+      "recall": 0.94945,
+      "f1-score": 0.9483094984973912,
+      "support": 20000.0
+    }
+  }
+}

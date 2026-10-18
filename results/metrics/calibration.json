@@ -1,0 +1,392 @@
+{
+  "method": "cross-fitted isotonic regression on out-of-fold predictions",
+  "n_bins": 10,
+  "note": "Calibration fixes the reliability of the reported risk level. It cannot change ROC-AUC.",
+  "heart_disease": {
+    "roc_auc_before": 0.8196,
+    "roc_auc_after": 0.8134,
+    "brier_before": 0.1803,
+    "brier_after": 0.074,
+    "ece_before": 0.2762,
+    "ece_after": 0.0038,
+    "ece_equalfreq_before": 0.2762,
+    "ece_equalfreq_after": 0.0048,
+    "ece_note": "equal-frequency ECE is the honest diagnostic at a ~10% base rate; equal-width ECE is dominated by the large low-risk bin",
+    "n": 8281,
+    "reliability_before": [
+      {
+        "bin": "0.0-0.1",
+        "n": 1816,
+        "mean_predicted": 0.0568,
+        "observed_rate": 0.0055
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 1254,
+        "mean_predicted": 0.1446,
+        "observed_rate": 0.0144
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 908,
+        "mean_predicted": 0.2486,
+        "observed_rate": 0.0341
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 771,
+        "mean_predicted": 0.3476,
+        "observed_rate": 0.0584
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 727,
+        "mean_predicted": 0.4497,
+        "observed_rate": 0.0839
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 740,
+        "mean_predicted": 0.5519,
+        "observed_rate": 0.1243
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 708,
+        "mean_predicted": 0.6507,
+        "observed_rate": 0.154
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 719,
+        "mean_predicted": 0.7493,
+        "observed_rate": 0.2476
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 529,
+        "mean_predicted": 0.8457,
+        "observed_rate": 0.3478
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 109,
+        "mean_predicted": 0.9245,
+        "observed_rate": 0.422
+      }
+    ],
+    "reliability_after": [
+      {
+        "bin": "0.0-0.1",
+        "n": 5394,
+        "mean_predicted": 0.0288,
+        "observed_rate": 0.0297
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 1486,
+        "mean_predicted": 0.1347,
+        "observed_rate": 0.1359
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 937,
+        "mean_predicted": 0.2507,
+        "observed_rate": 0.2476
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 273,
+        "mean_predicted": 0.3711,
+        "observed_rate": 0.4029
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 186,
+        "mean_predicted": 0.4338,
+        "observed_rate": 0.3763
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 5,
+        "mean_predicted": 0.5158,
+        "observed_rate": 0.0
+      }
+    ],
+    "model_file": "models/calibration/heart_disease_isotonic.pkl"
+  },
+  "insomnia_risk": {
+    "roc_auc_before": 0.7071,
+    "roc_auc_after": 0.7043,
+    "brier_before": 0.2169,
+    "brier_after": 0.1818,
+    "ece_before": 0.1853,
+    "ece_after": 0.0093,
+    "ece_equalfreq_before": 0.1853,
+    "ece_equalfreq_after": 0.0129,
+    "ece_note": "equal-frequency ECE is the honest diagnostic at a ~10% base rate; equal-width ECE is dominated by the large low-risk bin",
+    "n": 8275,
+    "reliability_before": [
+      {
+        "bin": "0.0-0.1",
+        "n": 6,
+        "mean_predicted": 0.0939,
+        "observed_rate": 0.0
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 347,
+        "mean_predicted": 0.1666,
+        "observed_rate": 0.0692
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 1193,
+        "mean_predicted": 0.2553,
+        "observed_rate": 0.1282
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 1708,
+        "mean_predicted": 0.351,
+        "observed_rate": 0.1698
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 1549,
+        "mean_predicted": 0.4489,
+        "observed_rate": 0.2485
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 1373,
+        "mean_predicted": 0.5477,
+        "observed_rate": 0.3518
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 1072,
+        "mean_predicted": 0.6463,
+        "observed_rate": 0.4207
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 674,
+        "mean_predicted": 0.7447,
+        "observed_rate": 0.5089
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 306,
+        "mean_predicted": 0.8399,
+        "observed_rate": 0.6765
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 47,
+        "mean_predicted": 0.9193,
+        "observed_rate": 0.7447
+      }
+    ],
+    "reliability_after": [
+      {
+        "bin": "0.0-0.1",
+        "n": 625,
+        "mean_predicted": 0.0725,
+        "observed_rate": 0.0864
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 2266,
+        "mean_predicted": 0.1478,
+        "observed_rate": 0.1505
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 1830,
+        "mean_predicted": 0.2409,
+        "observed_rate": 0.2355
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 1778,
+        "mean_predicted": 0.3544,
+        "observed_rate": 0.3583
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 1001,
+        "mean_predicted": 0.4531,
+        "observed_rate": 0.4635
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 487,
+        "mean_predicted": 0.5284,
+        "observed_rate": 0.5072
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 133,
+        "mean_predicted": 0.6382,
+        "observed_rate": 0.5564
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 91,
+        "mean_predicted": 0.7644,
+        "observed_rate": 0.8352
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 49,
+        "mean_predicted": 0.8117,
+        "observed_rate": 0.6939
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 15,
+        "mean_predicted": 0.9581,
+        "observed_rate": 0.8667
+      }
+    ],
+    "model_file": "models/calibration/insomnia_risk_isotonic.pkl"
+  },
+  "osa_risk": {
+    "roc_auc_before": 0.6911,
+    "roc_auc_after": 0.6861,
+    "brier_before": 0.2223,
+    "brier_after": 0.1972,
+    "ece_before": 0.1586,
+    "ece_after": 0.0089,
+    "ece_equalfreq_before": 0.1584,
+    "ece_equalfreq_after": 0.0126,
+    "ece_note": "equal-frequency ECE is the honest diagnostic at a ~10% base rate; equal-width ECE is dominated by the large low-risk bin",
+    "n": 7444,
+    "reliability_before": [
+      {
+        "bin": "0.0-0.1",
+        "n": 2,
+        "mean_predicted": 0.0963,
+        "observed_rate": 0.5
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 256,
+        "mean_predicted": 0.1702,
+        "observed_rate": 0.0703
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 940,
+        "mean_predicted": 0.2543,
+        "observed_rate": 0.1181
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 1361,
+        "mean_predicted": 0.3529,
+        "observed_rate": 0.2138
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 1586,
+        "mean_predicted": 0.4491,
+        "observed_rate": 0.3014
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 1448,
+        "mean_predicted": 0.5477,
+        "observed_rate": 0.3729
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 1013,
+        "mean_predicted": 0.6468,
+        "observed_rate": 0.4659
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 610,
+        "mean_predicted": 0.7427,
+        "observed_rate": 0.5426
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 203,
+        "mean_predicted": 0.8387,
+        "observed_rate": 0.6305
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 25,
+        "mean_predicted": 0.9158,
+        "observed_rate": 0.84
+      }
+    ],
+    "reliability_after": [
+      {
+        "bin": "0.0-0.1",
+        "n": 707,
+        "mean_predicted": 0.0723,
+        "observed_rate": 0.0778
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 962,
+        "mean_predicted": 0.1616,
+        "observed_rate": 0.1601
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 1747,
+        "mean_predicted": 0.2468,
+        "observed_rate": 0.2599
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 2075,
+        "mean_predicted": 0.3603,
+        "observed_rate": 0.3508
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 1036,
+        "mean_predicted": 0.4605,
+        "observed_rate": 0.4566
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 757,
+        "mean_predicted": 0.5436,
+        "observed_rate": 0.5495
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 75,
+        "mean_predicted": 0.6644,
+        "observed_rate": 0.64
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 59,
+        "mean_predicted": 0.754,
+        "observed_rate": 0.6949
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 11,
+        "mean_predicted": 0.8416,
+        "observed_rate": 1.0
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 15,
+        "mean_predicted": 0.9333,
+        "observed_rate": 0.7333
+      }
+    ],
+    "model_file": "models/calibration/osa_risk_isotonic.pkl"
+  }
+}

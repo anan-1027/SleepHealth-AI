@@ -56,14 +56,14 @@ TASKS = {
         "label": "Heart disease (self-reported CHD / CHF / angina / heart attack)",
         "definition": ("Composite of MCQ160B (congestive heart failure), MCQ160C (coronary "
                        "heart disease), MCQ160D (angina) and MCQ160E (heart attack) == 1. "
-                       "Source: CDC NHANES 2017-2018 MCQ_J."),
+                       "Source: CDC NHANES 2017-March 2020 pre-pandemic P_MCQ."),
         "model_a": DEMO,
         "model_b": DEMO + SLEEP,
     },
     "insomnia_risk": {
         "target": "target_insomnia_risk",
         "label": "Insomnia risk (ever told a doctor about trouble sleeping)",
-        "definition": ("SLQ050 == 1 (Yes). Source: CDC NHANES 2017-2018 SLQ_J. "
+        "definition": ("SLQ050 == 1 (Yes). Source: CDC NHANES 2017-March 2020 pre-pandemic P_SLQ. "
                        "Label item is excluded from the features."),
         "model_a": DEMO,
         "model_b": DEMO + ["sleep_duration_hrs", "weekend_sleep_hrs", "social_jetlag_hrs",
@@ -74,7 +74,7 @@ TASKS = {
         "label": "Obstructive sleep-apnea risk (symptom based)",
         "definition": ("SLQ030 == 3 (snoring >= 5 nights/week) OR SLQ040 >= 2 "
                        "(witnessed breathing pauses >= 3-4 nights/week). Source: CDC NHANES "
-                       "2017-2018 SLQ_J. Defining items are excluded from the features."),
+                       "2017-March 2020 pre-pandemic P_SLQ. Defining items are excluded from the features."),
         "model_a": DEMO,
         "model_b": DEMO + ["sleep_duration_hrs", "weekend_sleep_hrs", "social_jetlag_hrs",
                             "daytime_sleepiness", "trouble_sleeping"],
@@ -143,7 +143,7 @@ def main() -> None:
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "data": {
             "file": DATA.replace("\\", "/"),
-            "source": "CDC NHANES 2017-2018 (Cycle J)",
+            "source": "CDC NHANES 2017-March 2020 pre-pandemic (P_*.XPT, released May 2021)",
             "n_participants": int(len(df)),
             "design": "RepeatedStratifiedKFold 5 folds x 3 repeats (no single hold-out split)",
             "note": "Deployed models are refit on the full dataset after cross-validated "

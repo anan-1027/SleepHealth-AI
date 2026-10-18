@@ -1,10 +1,15 @@
 """
-NHANES 2017-2018 (Cycle J) -> analysis-ready sleep-disorder / cardiovascular table.
+NHANES 2017-March 2020 pre-pandemic -> analysis-ready sleep-disorder / cardiovascular table.
 
-Sources (CDC public use files, all stored in data/raw/):
-  DEMO_J : demographics          BMX_J  : body measures
-  SLQ_J  : sleep disorders       DIQ_J  : diabetes
-  BPQ_J  : hypertension          MCQ_J  : medical conditions (heart disease labels)
+DATA SOURCE: NHANES 2017-March 2020 PRE-PANDEMIC release (P_*.XPT, published May 2021).
+  This is the official combined 2017-2018 + 2019-March 2020 sample (the 2019-2020 cycle
+  was suspended in March 2020 and is not nationally representative on its own). It
+  SUPERSEDES the standalone 2017-2018 (cycle J) files and roughly doubles n. NCHS asks
+  that the special pre-pandemic weights (WTINTPRP / WTMECPRP) be used.
+
+  P_DEMO : demographics          P_BMX : body measures
+  P_SLQ  : sleep disorders       P_DIQ : diabetes
+  P_BPQ  : hypertension          P_MCQ : medical conditions (heart disease labels)
 
 Builds three NEW prediction targets that were previously unused:
   target_heart_disease : self-reported CHD / CHF / angina / heart attack  (MCQ160B/C/D/E)
@@ -23,7 +28,7 @@ import numpy as np
 RAW = os.path.join("data", "raw")
 OUT = os.path.join("data", "processed", "nhanes_sleep_health.csv")
 
-FILES = ["DEMO_J.XPT", "BMX_J.XPT", "SLQ_J.XPT", "DIQ_J.XPT", "BPQ_J.XPT", "MCQ_J.XPT"]
+FILES = ["P_DEMO.XPT", "P_BMX.XPT", "P_SLQ.XPT", "P_DIQ.XPT", "P_BPQ.XPT", "P_MCQ.XPT"]
 
 # CDC codes that mean Refused(7) / Don't know(9) -> treat as missing
 INVALID = [7.0, 9.0]
@@ -47,7 +52,7 @@ def load_merged() -> pd.DataFrame:
 
 
 def main() -> None:
-    print("--- Merging NHANES 2017-2018 modules ---")
+    print("--- Merging NHANES 2017-March 2020 pre-pandemic modules ---")
     n = load_merged()
     print(f"Merged shape: {n.shape}")
 

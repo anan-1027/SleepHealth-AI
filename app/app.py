@@ -61,7 +61,7 @@ def load_models():
 @st.cache_data
 def load_metrics():
     out = {}
-    for name in ("metrics.json", "large_model_metrics.json"):
+    for name in ("metrics.json", "large_model_metrics.json", "calibration.json"):
         path = METRICS_DIR / name
         if path.exists():
             try:
@@ -71,7 +71,34 @@ def load_metrics():
     return out
 
 
+@st.cache_resource
+def load_calibrators():
+    """Cross-fitted isotonic maps that turn raw model scores into honest risks."""
+    cal_dir = MODELS_DIR / "calibration"
+    out = {}
+    for task in ("heart_disease", "insomnia_risk", "osa_risk"):
+        path = cal_dir / f"{task}_isotonic.pkl"
+        if path.exists():
+            try:
+                out[task] = joblib.load(path)
+            except Exception:
+                pass
+    return out
+
+
+def calibrated_risk(task: str, raw: float) -> float:
+    """Return the calibrated probability for a single raw model score."""
+    cal = CALIBRATORS.get(task)
+    if cal is None:
+        return raw
+    try:
+        return float(cal.predict([raw])[0])
+    except Exception:
+        return raw
+
+
 MODELS, MISSING_MODELS = load_models()
+CALIBRATORS = load_calibrators()
 ALL_METRICS = load_metrics()
 NHANES_METRICS = ALL_METRICS.get("metrics.json") or {}
 LARGE_METRICS = ALL_METRICS.get("large_model_metrics.json") or {}
@@ -308,8 +335,9 @@ elif page == "🫀 Sleep-Disorder & Heart Risk (NHANES)":
                  "osa_risk": "Sleep apnea"}
         for i, key in enumerate(required):
             meta = TASK_META.get(key, {})
-            p = float(MODELS[key].predict_proba(df_in[meta.get("features_model_b",
-                                                               list(inputs))])[:, 1][0]) * 100
+            raw = float(MODELS[key].predict_proba(df_in[meta.get("features_model_b",
+                                                               list(inputs))])[:, 1][0])
+            p = calibrated_risk(key, raw) * 100          # honest, calibrated risk
             probs[key] = p
             with cols[i]:
                 st.plotly_chart(gauge(p, f"{names[key]} risk"), width="stretch")
@@ -350,6 +378,25 @@ elif page == "🫀 Sleep-Disorder & Heart Risk (NHANES)":
 
         st.markdown("#### 📈 Model performance for this task")
         show_task_metrics(key)
+
+        cal = (ALL_METRICS.get("calibration.json") or {}).get(key)
+        if cal:
+            st.markdown("#### 🎛️ Probability calibration")
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Brier score ↓", f"{cal['brier_before']:.4f}",
+                      f"→ {cal['brier_after']:.4f}")
+            c2.metric("ECE (equal-freq) ↓", f"{cal['ece_equalfreq_before']:.4f}",
+                      f"→ {cal['ece_equalfreq_after']:.4f}")
+            c3.metric("ROC-AUC", f"{cal['roc_auc_before']:.4f}",
+                      f"→ {cal['roc_auc_after']:.4f}")
+            st.caption(
+                "Gauges above show **calibrated** risks. The raw model over-predicted "
+                "severely (e.g. a raw 0.84 corresponded to a true rate near 0.34) because "
+                "`class_weight='balanced'` shifts scores away from the ~9–32% base rates. "
+                "A cross-fitted isotonic map fixes the level: Brier and ECE drop sharply "
+                "while ROC-AUC stays essentially unchanged (calibration cannot change "
+                "ranking). Reliability tables are in "
+                "`results/metrics/calibration.json`.")
 
     else:
         st.info("Fill the profile and press **Estimate risks**.")

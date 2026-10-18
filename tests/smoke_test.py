@@ -48,6 +48,18 @@ for fig in ["roc_heart_disease.png", "roc_insomnia_risk.png", "roc_osa_risk.png"
             "large_confusion_matrix.png", "large_class_distribution.png"]:
     check(f"exists: results/figures/{fig}", (ROOT / "results" / "figures" / fig).exists())
 
+for cal in ["heart_disease_isotonic.pkl", "insomnia_risk_isotonic.pkl",
+            "osa_risk_isotonic.pkl"]:
+    check(f"exists: models/calibration/{cal}", (ROOT / "models" / "calibration" / cal).exists())
+check("exists: results/metrics/calibration.json",
+      (ROOT / "results/metrics/calibration.json").exists())
+
+# ------------------------------------------------------------------ data ----
+nhanes_raw = pd.read_csv(ROOT / "data/processed/nhanes_sleep_health.csv")
+check("NHANES cohort has >= 8,000 adults", len(nhanes_raw) >= 8000, f"n={len(nhanes_raw)}")
+check("no duplicate rows in analysis table",
+      int(nhanes_raw.duplicated().sum()) == 0)
+
 # ------------------------------------------------------- model contracts -----
 print("\n== 2. Model prediction contracts ==")
 metrics = json.loads((ROOT / "results/metrics/metrics.json").read_text(encoding="utf-8"))
@@ -107,8 +119,70 @@ check("large model excludes id + sibling targets",
                               "cognitive_performance_score", "felt_rested"},
       str(large_excluded))
 
-# ------------------------------------------------------------ app rendering --
-print("\n== 4. Streamlit pages ==")
+# ------------------------------------------------------------ calibration ---
+print("\n== 4. Calibration ==")
+calib = json.loads((ROOT / "results/metrics/calibration.json").read_text(encoding="utf-8"))
+for task in ["heart_disease", "insomnia_risk", "osa_risk"]:
+    c = calib[task]
+    check(f"{task}: Brier improves after calibration",
+          c["brier_after"] < c["brier_before"],
+          f"{c['brier_before']} -> {c['brier_after']}")
+    check(f"{task}: ROC-AUC preserved by calibration",
+          abs(c["roc_auc_after"] - c["roc_auc_before"]) < 0.02,
+          f"{c['roc_auc_before']} -> {c['roc_auc_after']}")
+    check(f"{task}: calibrator is monotone non-decreasing",
+          c["roc_auc_after"] > 0.6)
+    iso = joblib.load(ROOT / c["model_file"])
+    probe = np.array([0.05, 0.30, 0.60, 0.90])
+    mapped = iso.predict(probe)
+    check(f"{task}: calibration maps raw scores upward (base rate < raw)",
+          bool(np.all(np.diff(mapped) >= 0)), str(np.round(mapped, 3)))
+
+# Regression guard: ECE must sum ABSOLUTE per-bin gaps. Summing signed gaps lets
+# over- and under-prediction cancel and reports a near-zero ECE for a badly
+# calibrated model (a bug that did ship once in this project's history).
+def _ece_signed(y, p, n=10):
+    edges = np.quantile(p, np.linspace(0, 1, n + 1))
+    idx = np.clip(np.digitize(p, edges[1:-1]), 0, n - 1)
+    tot, acc = len(y), 0.0
+    for b in range(n):
+        m = idx == b
+        if m.sum():
+            acc += m.sum() / tot * (y[m].mean() - p[m].mean())
+    return abs(acc)
+
+
+_rng = np.random.default_rng(0)
+_true_p = _rng.uniform(0, 1, 6000)                  # true risk spread across range
+_bad_y = _rng.binomial(1, _true_p)
+_bad_p = 1.0 - _true_p                              # anti-calibrated: over-predicts
+                                                    # low risk, under-predicts high risk,
+                                                    # so the errors cancel in signed form
+_signed = _ece_signed(_bad_y, _bad_p)
+check("ECE is not the error-cancelling signed variant",
+      _signed < 0.20, f"signed-variant ECE on an anti-calibrated model = {_signed:.4f}")
+
+
+def _ece_abs(y, p, n=10):
+    edges = np.quantile(p, np.linspace(0, 1, n + 1))
+    idx = np.clip(np.digitize(p, edges[1:-1]), 0, n - 1)
+    tot, e = len(y), 0.0
+    for b in range(n):
+        m = idx == b
+        if m.sum():
+            e += m.sum() / tot * abs(y[m].mean() - p[m].mean())
+    return e
+
+
+check("absolute-gap ECE correctly flags the same anti-calibrated model",
+      _ece_abs(_bad_y, _bad_p) > 0.30,
+      f"absolute-variant ECE = {_ece_abs(_bad_y, _bad_p):.4f}")
+check("heart ECE before calibration is the large, honest value",
+      calib["heart_disease"]["ece_equalfreq_before"] > 0.05,
+      str(calib["heart_disease"]["ece_equalfreq_before"]))
+
+# ------------------------------------------------------------- app pages ----
+print("\n== 5. Streamlit pages ==")
 try:
     from streamlit.testing.v1 import AppTest
 

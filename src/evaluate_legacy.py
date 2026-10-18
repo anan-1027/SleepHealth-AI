@@ -34,7 +34,7 @@ from xgboost import XGBClassifier
 warnings.filterwarnings("ignore")
 
 METRICS = os.path.join("results", "metrics", "metrics.json")
-NH = os.path.join("data", "processed", "nhanes_processed.csv")
+NH = os.path.join("data", "processed", "nhanes_sleep_health.csv")
 KG = os.path.join("data", "processed", "sleep_cleansed.csv")
 
 SKF = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=42)
@@ -94,10 +94,10 @@ def main():
     B = A + ["sleep_duration_hrs", "trouble_sleeping"]
     legacy = {
         "diabetes": ("target_diabetes", "Diabetes (self-reported doctor diagnosis)",
-                     "DIQ010 == 1, CDC NHANES 2017-2018. Legacy ablation study.",
+                     "DIQ010 == 1, CDC NHANES 2017-March 2020 pre-pandemic. Legacy ablation study.",
                      "RandomForest"),
         "hypertension": ("target_hypertension", "Hypertension (self-reported)",
-                         "BPQ020 == 1, CDC NHANES 2017-2018. Legacy ablation study.",
+                         "BPQ020 == 1, CDC NHANES 2017-March 2020 pre-pandemic. Legacy ablation study.",
                          "XGBoost"),
     }
     for name, (target, label, definition, alg) in legacy.items():
